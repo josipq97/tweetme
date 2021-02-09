@@ -4,8 +4,25 @@ this is amazing!!!
 {% endblock headtitle%}
 
 {% block content %}
-Welcome to Tweetme 2
-<div id="tweets">
+<div class="row text-center">
+    <div class="col">
+        <h1>Welcome to Tweetme 2
+        </h1>
+    </div>
+</div>
+
+<div class='row mb-4'>
+    <div class='col-md-4 mx-auto col-10'>
+        <form class='form' method='POST' action='/create-tweet'>
+            {% csrf_token %}
+            <input type="hidden" value="/" name='next' />
+            <textarea class='form-control' name='content' placeholder='Your tweet'></textarea>
+            <button type='submit' class='btn btn-primary'>Tweet</button>
+        </form>
+    </div>
+</div>
+
+<div class='row' id="tweets">
     Replace me
 </div>
 
@@ -18,6 +35,20 @@ Welcome to Tweetme 2
     const url = "/tweets";
     const responseType = "json";
 
+
+    function handleDidLike(tweet_id, currentCount){
+        console.log(tweet_id, currentCount);
+    }
+    function LikeBtn(tweet){
+        return "<button class='btn btn-primary btn-sm' onclick='handleDidLike(" + tweet.id + "," + tweet.likes + ")'>" + tweet.likes + " Like</button>"
+    }
+
+    function formatTweetElement(tweet) {
+        var formatedTweet = "<div class='mb-4 col-12 col-md-10 mx-auto border rounded py-3' id='tweet-" + tweet.id + 
+        "'><p>" + tweet.content +"</p>" + 
+          "<div class='btn-group'>" + LikeBtn(tweet) + "</div></div>";
+        return formatedTweet;
+    }
     xhr.responseType = responseType;
     xhr.open(method, url);
     xhr.onload = function(){
@@ -27,7 +58,8 @@ Welcome to Tweetme 2
         var finalTweetStr = "";
         var i;
         for (i=0; i<listedItems.length; i++){
-            var currentItem = "<div class='mb-4'><h1>" + listedItems[i].id + "</h1>" + "<p>" + listedItems[i].content + "</p></div>";
+            var tweetObj = listedItems[i];
+            var currentItem = formatTweetElement(tweetObj);
             finalTweetStr += currentItem;
         }
         tweetsElement.innerHTML = finalTweetStr;
